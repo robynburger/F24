@@ -47,15 +47,15 @@ Populates the nxn matrix A where A[i][k] = a_k(i)
 '''
 def populate_A(D, n):
   A = np.zeros((n, n), dtype=int)
-  k = 6
-  for i in range(1, k+1):
+  for k in range(1, n+1):
+    for i in range(1, k+1):
         for j in range(i+1, k+1): 
           if D[k-1][i-1][j-1] == 1:
             A[i-1][k-1] = j
   return A
       
 '''
-Prints F and D for input string 's'
+Prints F, D, and A for input string 's'
 '''
 def LTS(s):
   n = len(s)
