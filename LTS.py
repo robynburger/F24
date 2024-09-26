@@ -3,11 +3,17 @@ import numpy as np
 
 '''
 Usage: 
-Change "string" below, then in command line:
+Enter values for string and verbose
+then in command line:
 $ python LTS.py
 
 '''
-string = "BABBCA"
+# The input string 
+string = "BABBCA" 
+
+# if True, output includes F and D matrices for all 0<k<n+1
+# if False, output only A matrix
+verbose = False 
 
 
 '''
@@ -57,7 +63,7 @@ def populate_A(D, n):
 '''
 Prints F, D, and A for input string 's'
 '''
-def LTS(s):
+def LTS(s, verbose):
   n = len(s)
   # Pyton allows you to access the -1^st index, so initially, the F matrices have a buffer row and column of 0s
   empty_bufferF = np.zeros((n+1, n+1, n+1), dtype=int)
@@ -71,10 +77,11 @@ def LTS(s):
     for i in range (1, n+1):
      for j in range(1, n+1):
         F[k-1][i-1][j-1] = bufferF[k][i][j]
-    print(f"F{k}: \n {F[k-1]}")
-    print(f"D{k}: \n {D[k-1]} \n")
+    if verbose:
+      print(f"F{k}: \n {F[k-1]}")
+      print(f"D{k}: \n {D[k-1]} \n")
   A = populate_A(D, n)
   print(f"A: \n {A}")
   return 0
   
-LTS(string)
+LTS(string, verbose)
