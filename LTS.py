@@ -9,7 +9,7 @@ $ python LTS.py
 
 '''
 # The input string 
-string = "abcdaxbxcxdx" 
+string = "abxaxbxab" 
 
 # if True, output includes F and D matrices for all 0<k<n+1
 # if False, output only A matrix
@@ -61,20 +61,32 @@ def populate_A(D, n):
   return A
 
 '''
-Finds l such that fn(l, l+10 = maxr : 1 <= r < n(fn(r, r+1)))
+Finds p, the optimal splitpoint such that fn(p, p+1) = max l : 1 <= l < n(fn(l, r+l)))
 '''
-def find_l(F, s):
+def find_p(F, s):
   n = len(s)
   maxVal = 0
-  l = -1
+  p = -1
   for i in range(1, n):
     curr = F[n-1][i-1][i] 
     if curr > maxVal:  ## Not sure if this should be > or >=
       maxVal = curr 
-      l = i
+      p = i
       # print(f"F[{n-1}][{i-1}][{i}]={curr}")
-  return l
-       
+  return p
+"""
+Finds F_n(i, i+1) for each i 
+
+"""
+def find_L(F, s): 
+  n = len(s)
+  L = np.zeros((1, n+1), dtype = int)
+  n = len(s) 
+  for i in range(1, n):       
+    L[0][i] = F[n-1][i-1][i] #append 0 to end when print
+  
+  return L
+
     
 '''
 Prints F, D, and A for input string 's'
@@ -97,9 +109,10 @@ def LTS(s, verbose):
       print(f"F{k}: \n {F[k-1]}")
       print(f"D{k}: \n {D[k-1]} \n")
   A = populate_A(D, n)
-  l = find_l(F, s)
+  p = find_p(F, s)
   print(f"A: \n {A}")
-  print(f"l = {l}")
+  print(f"p = {p}")
+  print(f"L = {find_L(F, s)}")
   return 0
 
   
