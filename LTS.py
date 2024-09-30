@@ -9,7 +9,7 @@ $ python LTS.py
 
 '''
 # The input string 
-string = "BABBCA" 
+string = "abcdaxbxcxdx" 
 
 # if True, output includes F and D matrices for all 0<k<n+1
 # if False, output only A matrix
@@ -59,7 +59,23 @@ def populate_A(D, n):
           if D[k-1][i-1][j-1] == 1:
             A[i-1][k-1] = j
   return A
-      
+
+'''
+Finds l such that fn(l, l+10 = maxr : 1 <= r < n(fn(r, r+1)))
+'''
+def find_l(F, s):
+  n = len(s)
+  maxVal = 0
+  l = -1
+  for i in range(1, n):
+    curr = F[n-1][i-1][i] 
+    if curr > maxVal:  ## Not sure if this should be > or >=
+      maxVal = curr 
+      l = i
+      # print(f"F[{n-1}][{i-1}][{i}]={curr}")
+  return l
+       
+    
 '''
 Prints F, D, and A for input string 's'
 '''
@@ -81,7 +97,10 @@ def LTS(s, verbose):
       print(f"F{k}: \n {F[k-1]}")
       print(f"D{k}: \n {D[k-1]} \n")
   A = populate_A(D, n)
+  l = find_l(F, s)
   print(f"A: \n {A}")
+  print(f"l = {l}")
   return 0
+
   
 LTS(string, verbose)
