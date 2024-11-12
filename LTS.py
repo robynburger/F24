@@ -9,11 +9,11 @@ $ python LTS.py
 
 '''
 # The input string 
-string = "abxaxbxab" 
+string = "abaabcdc" 
 
 # if True, output includes F and D matrices for all 0<k<n+1
 # if False, output only A matrix
-verbose = False 
+verbose = True 
 
 
 '''

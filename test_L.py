@@ -1,3 +1,4 @@
+import random
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -16,10 +17,10 @@ $ python LTS.py
 '''
 
 #characters allowed in test string 
-alphabet = ['a', 'b', 'c', 'd', 'e']
+alphabet = ['a', 'b']
 
 # max size of the test string 
-max_length = 15
+max_length = 20
 
 # number of test cases
 num_tests = 100000
@@ -129,47 +130,109 @@ def test_L(s):
   p_l = count_peaks(L) #peak list
   n_p = len(p_l) # number of peaks
   v = valley_depth(L, p_l) # True if peaks heights differ by more than 1 
-  print(f"s: {s} \n L: {L} \n chars: {c} \n {n_p} peaks: {p_l} \n \n")
+  # print(f"s: {s} \n L: {L} \n chars: {c} \n {n_p} peaks: {p_l} \n \n")
   return L
 """
 Plots the graphs
 """
-def plot(L, m, n):
+def plot(s, L, m, n):
     plt.figure()
     x = list(range(len(L)))
     y = L
     plt.plot(x, y, marker='o', color='blue', linewidth=2, markersize=5)
-    for i, txt in enumerate(y):
-      plt.text(x[i], y[i] + 0.1, str(txt), ha='center', va='bottom', fontsize=10)
-    max_ticks = 10  
+    
+    max_ticks = 10
     x_ticks = np.linspace(0, len(L) - 1, min(len(L), max_ticks), dtype=int)
-    y_ticks = np.linspace(min(y), max(y), max_ticks, dtype=int)
-    plt.xticks(x_ticks) 
-    plt.yticks(y_ticks) 
+    y_ticks = np.linspace(min(y), max(y), len(x_ticks), dtype=int)  # Match the number of y-ticks to x-ticks for visual proportion
+    
+    plt.xticks(x_ticks)
+    plt.yticks(y_ticks)
+    
     plt.xlabel(f"{L}")
     plt.gca().spines['top'].set_visible(False)
     plt.gca().spines['right'].set_visible(False)
-    plt.gca().spines['left'].set_visible(False)
-    plt.gca().spines['bottom'].set_position(('data', 0))  
-    plt.title(f"m = {m}, n = {n}")
-    plt.draw
+    plt.gca().spines['left'].set_position(('data', 0)) 
+    plt.gca().spines['bottom'].set_position(('data', 0))
 
+    # Set tight limits on both axes
+    plt.xlim(0, len(L) - 1)
+    plt.ylim(min(y), max(y) + 0.3)  # Add minimal padding to make y-axis proportional without excessive spacing
+    plt.gca().set_box_aspect(.25)
+    plt.title(f"s = {s},")
+    plt.draw()
 """
 Generates the string of the form of case 1 or case 2
 """
-def test_cases(m):
-  for n in range(2, m):
+def test_case1(m):
+  for n in range(1, m+1):
     s = ""
     for _ in range(0, m): s += ('a')
-    for _ in range(0, n): s += ('ba') # case 1: ab, case 2: ba
+    for _ in range(0, n): s += ('ab') 
     for _ in range(0, m): s += ('b')
     print(f"m = {m}, n = {n}")
-    plot(test_L(s), m, n)
+    plot(s, test_L(s), m, n)
   plt.show()
+def test_case2(m):
+  for n in range(1, m+1):
+    s = ""
+    for _ in range(0, m): s += ('a')
+    for _ in range(0, n): s += ('ba') 
+    for _ in range(0, m): s += ('b')
+    print(f"m = {m}, n = {n}")
+    plot(s, test_L(s), m, n)
+  plt.show()
+def test_case3(m, n):
+  # for n in range(1, m+1):
+    s = ""
+    for _ in range(0, m): s += ('a')
+    for _ in range(0, n): s += ('b')
+    for _ in range(0, m): s += ('a')
+    print(f"m = {m}, n = {n}")
+    plot(s, test_L(s), m, n)
+    plt.show()              
 
+def count_ones(L):
+  count = 0
+  for el in L:
+    if el == 1:
+      count += 1
+  return count
 
-m = 7 #change this line 
-test_cases(m)  
+def test_rand(alphabet, max_length):
+  for x in range(num_tests):
+      if x % 1000 == 0: print(f"Test {x}")
+      s = ""
+      for _ in range(random.randint(max_length-5, max_length)):
+        s += str(random.choice(alphabet))
+      analyze(s)
+
+def analyze(s):
+  L = test_L(s)
+  c = len(set(s)) # number of characters
+  p_l = count_peaks(L) # peak list
+  n_p = len(p_l) # number of peaks
+  # if count_ones(L) > 5: # equivalent to, if there are 4+ internal ones
+  print(f"s: {s} \n L: {L} \n chars: {c} \n {n_p} peaks: {p_l} \n \n")
+ 
+# Function to generate all binary strings 
+def genAllBinaryStrings(n, arr, i): 
+    if i == n:
+        analyze(''.join(str(x) for x in arr))
+        return
+    arr[i] = 0
+    genAllBinaryStrings(n, arr, i + 1)  
+    arr[i] = 1
+    genAllBinaryStrings(n, arr, i + 1) 
+ 
+n = 4 
+genAllBinaryStrings(n, [None] * n, 0)
+
+# s = "bbaaab"
+# plot(s, test_L(s), 0, 0)
+# plt.show()
+# m = 7 #change this line 
+# test_cases(m)  
+# test_case3(5, 11)
 
 
 
