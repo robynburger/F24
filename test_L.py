@@ -1,6 +1,7 @@
 import random
 import numpy as np
 import matplotlib.pyplot as plt
+from itertools import product
 
 
 '''
@@ -17,7 +18,7 @@ $ python LTS.py
 '''
 
 #characters allowed in test string 
-alphabet = ['a', 'b']
+alphabet = 2
 
 # max size of the test string 
 max_length = 20
@@ -29,6 +30,10 @@ num_tests = 100000
 # if False, output only A matrix
 verbose = False 
 
+lst3 = []
+lst4 = []
+lst5 = []
+lst = []
 '''
 Populates the nxn matrix, Fk, for each 0 < k <= n such that F[k][i][j] = F_k(i, j)
 '''
@@ -74,7 +79,6 @@ def find_L(F, s):
   for i in range(1, n):       
     L.append(F[n-1][i-1][i])
   L.append(0)
-  
   return L
 """
 Returns the number of peaks and their indices.
@@ -190,14 +194,22 @@ def test_case3(m, n):
     print(f"m = {m}, n = {n}")
     plot(s, test_L(s), m, n)
     plt.show()              
-
-def count_ones(L):
+def count_n(L, n):
   count = 0
   for el in L:
-    if el == 1:
+    if el == n:
       count += 1
   return count
-
+def count_consecutive_ones(L):
+    max_ones = 0
+    current_ones = 0
+    for el in L:
+        if el == 1:
+            current_ones += 1
+        else:
+            max_ones = max(max_ones, current_ones)
+            current_ones = 0
+    return max(max_ones, current_ones)
 def test_rand(alphabet, max_length):
   for x in range(num_tests):
       if x % 1000 == 0: print(f"Test {x}")
@@ -205,35 +217,69 @@ def test_rand(alphabet, max_length):
       for _ in range(random.randint(max_length-5, max_length)):
         s += str(random.choice(alphabet))
       analyze(s)
-
 def analyze(s):
   L = test_L(s)
-  c = len(set(s)) # number of characters
-  p_l = count_peaks(L) # peak list
-  n_p = len(p_l) # number of peaks
-  # if count_ones(L) > 5: # equivalent to, if there are 4+ internal ones
-  print(f"s: {s} \n L: {L} \n chars: {c} \n {n_p} peaks: {p_l} \n \n")
+  # c = len(set(s)) # number of characters
+  # p_l = count_peaks(L) # peak list
+  # n_p = len(p_l) # number of peaks
+  # c1 = count_n(L, 1)
+  c2 = count_n(L, 2)
+  return c2
+    # print(f"s: {s} \n L: {L} \n")
+    # lst3.append(s)
+  # if L == [0, 1, 1, 2, 1, 1, 0]:
+  #   plot(s, test_L(s), 0, 0)
+  #   plt.show()
+  # if c1 == 4:
+  #   lst4.append(s)
+  # if c1 == 5:
+  #   lst5.append(s)
+  # if c1 > 5:
+  #    lst.append(s)
  
-# Function to generate all binary strings 
-def genAllBinaryStrings(n, arr, i): 
-    if i == n:
-        analyze(''.join(str(x) for x in arr))
-        return
-    arr[i] = 0
-    genAllBinaryStrings(n, arr, i + 1)  
-    arr[i] = 1
-    genAllBinaryStrings(n, arr, i + 1) 
  
-n = 4 
-genAllBinaryStrings(n, [None] * n, 0)
+def genBinary(n):
+    return [''.join(p) for p in product('01', repeat=n)]
+def genTernary(n):
+    return [''.join(p) for p in product('012', repeat=n)]
+def gen4ary(n):
+    return [''.join(p) for p in product('0123', repeat=n)]
+def gen5ary(n):
+    return [''.join(p) for p in product('01234', repeat=n)]
 
-# s = "bbaaab"
+def testAllBinaryStrings(n, m):
+  for i in range(n, m+1):
+    print(f"Start {i}")
+    for s in genBinary(i):
+      c2 = analyze(s)
+      if c2 == 8:
+         print(s, c2)
+    print(f"Finish {i} \n ")
+  # print(lst3)
+
+# count = 0
+# for s in genTernary(8):
+#   count = count + 1
+#   if count % 100 == 0: 
+#     print(count)
+#     # print(f"{s} {test_L(s)}")
+#   if test_L(s) == [0, 1, 1, 1, 2, 1, 2, 1, 0]:
+#      print(s)
+# s = "0001011110"
 # plot(s, test_L(s), 0, 0)
 # plt.show()
-# m = 7 #change this line 
-# test_cases(m)  
-# test_case3(5, 11)
 
+
+testAllBinaryStrings(15, 30)
+# f = open("consecutive ones.txt", "a")
+# f.write(f"Testing all binary strings up to length 15")
+# f.write(f"Three conseuctive ones:\n {lst3}\n")
+# f.write(f"Four conseuctive one:\n {lst4}\n")
+# f.write(f"Five conseuctive one:\n {lst5}\n")
+# f.write(f"6+ conseuctive one:\n {lst}\n")
+# f.close()
+
+# count_n([0,1,2,1,2,1,2,1,0], 2)
 
 
 
