@@ -2,6 +2,7 @@ import random
 import numpy as np
 import matplotlib.pyplot as plt
 from itertools import product
+import math
 
 
 '''
@@ -136,10 +137,10 @@ def test_L(s):
   v = valley_depth(L, p_l) # True if peaks heights differ by more than 1 
   # print(f"s: {s} \n L: {L} \n chars: {c} \n {n_p} peaks: {p_l} \n \n")
   return L
-"""
+""" 
 Plots the graphs
 """
-def plot(s, L, m, n):
+def plot(s, L, m):
     plt.figure()
     x = list(range(len(L)))
     y = L
@@ -157,12 +158,12 @@ def plot(s, L, m, n):
     plt.gca().spines['right'].set_visible(False)
     plt.gca().spines['left'].set_position(('data', 0)) 
     plt.gca().spines['bottom'].set_position(('data', 0))
-
+   
     # Set tight limits on both axes
     plt.xlim(0, len(L) - 1)
     plt.ylim(min(y), max(y) + 0.3)  # Add minimal padding to make y-axis proportional without excessive spacing
     plt.gca().set_box_aspect(.25)
-    plt.title(f"s = {s},")
+    plt.title(f"{m}")
     plt.draw()
 """
 Generates the string of the form of case 1 or case 2
@@ -191,9 +192,25 @@ def test_case3(m, n):
     for _ in range(0, m): s += ('a')
     for _ in range(0, n): s += ('b')
     for _ in range(0, m): s += ('a')
-    print(f"m = {m}, n = {n}")
-    plot(s, test_L(s), m, n)
-    plt.show()              
+    # print(f"m = {m}, n = {n}")
+    # plot(s, test_L(s), m, n)
+    # plt.show()    
+    return s          
+def test_case4(h): 
+   s = ""
+   for _ in range(0, h+1): s += ('0')
+   for _ in range(0, 2*h+1): s += ('1')
+   for _ in range(0, h): s += ('0')
+   return s
+def test_case5(i, k): 
+   s = ""
+   for _ in range(0, i+1): s += ('0')
+   for _ in range(0, i+k+1): s += ('1')
+   for _ in range(0, 2): s+= ('0')
+   for _ in range(0, i-k+1): s += ('1')
+   for _ in range(0, i+ 1): s += ('0')
+   return s
+
 def count_n(L, n):
   count = 0
   for el in L:
@@ -219,12 +236,11 @@ def test_rand(alphabet, max_length):
       analyze(s)
 def analyze(s):
   L = test_L(s)
-  # c = len(set(s)) # number of characters
-  # p_l = count_peaks(L) # peak list
-  # n_p = len(p_l) # number of peaks
-  # c1 = count_n(L, 1)
-  c2 = count_n(L, 2)
-  return c2
+  c = len(set(s)) # number of characters
+  p_l = count_peaks(L) # peak list
+  n_p = len(p_l) # number of peaks
+  c1 = count_n(L, 1)
+  return L
     # print(f"s: {s} \n L: {L} \n")
     # lst3.append(s)
   # if L == [0, 1, 1, 2, 1, 1, 0]:
@@ -247,30 +263,98 @@ def gen4ary(n):
 def gen5ary(n):
     return [''.join(p) for p in product('01234', repeat=n)]
 
-def testAllBinaryStrings(n, m):
+def count_to_h(h, L):
+  count = 0
+  for i in L:
+    if i < h+1:
+      count = count + 1
+  return count
+
+# returns splitpoint that results in LTS
+def LTS_sp(L): 
+  LTS = max(L)
+  ls = []
+  for i in range(0, len(L)):
+     if L[i] == LTS:
+        ls.append(i)
+  return ls
+
+"""
+Tests that the LTS appears in middle 1/2 by exhaustively testing all binary strings of length n to m 
+"""
+def testMiddleBin(n, m):
   for i in range(n, m+1):
-    print(f"Start {i}")
+    print(f"Start {i} ")
     for s in genBinary(i):
-      c2 = analyze(s)
-      if c2 == 8:
-         print(s, c2)
+      n = len(s)
+      L = test_L(s)
+      ls = LTS_sp(L)
+      ls2 = LTS_sp(L)
+      i1 =  math.ceil(n/4 )
+      i2 = math.floor((n *3)/4) 
+      
+      # print(ls)
+      for m in ls2: 
+        if m < (i1) or m > (i2):
+            ls.remove(m)
+      if not ls: 
+         print(f"uh oh \n {n}, {i1}, {i2} \n {L}\n {ls} \n \n")
     print(f"Finish {i} \n ")
   # print(lst3)
 
-# count = 0
-# for s in genTernary(8):
+"""
+Tests if LTS appears at exactly 1/4 of 3/4 mark
+"""
+def testEdgeBin(n, m):
+  for i in range(n, m+1):
+    print(f"Start {i} ")
+    for s in genBinary(i):
+      n = len(s)
+      L = test_L(s)
+      ls = LTS_sp(L)
+      ls2 = LTS_sp(L)
+      i1 =  math.ceil(n/4 )
+      i2 = math.floor((n *3)/4) 
+      
+      # print(ls)
+      for m in ls2: 
+        if m < (i1) or m > (i2):
+            ls.remove(m)
+      if not ls: 
+         print(f"uh oh \n {n}, {i1}, {i2} \n {L}\n {ls} \n \n")
+    print(f"Finish {i} \n ")
+
+
+def testNumToH(n, m):
+  for i in range(n, m+1):
+    print(f"Start {i} ")
+    for s in genBinary(i):
+      n = len(s)
+      L = test_L(s)
+      h = 3
+      if count_to_h(h, L) == 4*h +3:
+         print(s, L)
+    print(f"Finish {i} \n ")
+  # print(lst3)
+   # count = 0
+# for s in genBinary(10):
 #   count = count + 1
 #   if count % 100 == 0: 
 #     print(count)
 #     # print(f"{s} {test_L(s)}")
-#   if test_L(s) == [0, 1, 1, 1, 2, 1, 2, 1, 0]:
+#   if test_L(s) == [0, 1, 2, 2, 2, 2, 2, 2, 2, 1, 0]:
 #      print(s)
-# s = "0001011110"
-# plot(s, test_L(s), 0, 0)
-# plt.show()
+# for m in range(1, 5):
+#   for n in range(1, 2*m+4):
+#     s = test_case3(m, n)
+#     plot(s, test_L(s), m, n)
+#     plt.show()
+#     print(f"(m, n) = ({m}, {n}), \n s = {s} \n \n")
+    # print(f"(m, n) = ({m}, {n}), {n} appears {count_n(analyze(s), n)} times")
+    # plot(s, test_L(s), 0, 0)
+    # plt.show()
 
-
-testAllBinaryStrings(15, 30)
+testMiddleBin(3, 20)
 # f = open("consecutive ones.txt", "a")
 # f.write(f"Testing all binary strings up to length 15")
 # f.write(f"Three conseuctive ones:\n {lst3}\n")
@@ -281,5 +365,11 @@ testAllBinaryStrings(15, 30)
 
 # count_n([0,1,2,1,2,1,2,1,0], 2)
 
-
-
+# for i in range(1, 100):
+#   for k in range(-i, i+1):
+#     s = test_case5(i, k)
+#     L = test_L(s)
+#     ci = count_n(L, i)
+#     plot(s, L, f"i = {i} k = {k}")
+#     plt.show()
+ 
