@@ -14,11 +14,85 @@ max_length = 20
 # number of test cases
 num_tests = 100000
 
-# max size of the test string 
-max_length = 20
+'''
+Populates the nxn matrix, Fk, for each 0 < k <= n such that F[k][i][j] = F_k(i, j)
+'''
+def populate_F(F, s):
+  n = len(s)
+  for k in range(1, n+1):
+    for i in range (1, k+1): 
+      for j in range(i+1, k+1):
+            if s[i-1] == s[k-1]: 
+              F[k][i][j] = F[k-1][i-1][j] + 1 
+            else:
+              F[k][i][j]= max(F[k][i-1][j],F[k-1][i][j])
+  return F
 
-# number of test cases
-num_tests = 100000
+'''
+Populates the nxn matrix, Dk, for each 0 < k <= n such that D[k][i][j] = D_k(i, j)
+'''
+def populate_D(F, n):
+  D = np.zeros((n, n, n), dtype=int)
+  for k in range(1, n+1):
+    for i in range (1, n+1):
+     for j in range(i+1, n+1):
+        D[k-1][i-1][j-1] = F[k][i][j] - F[k][i-1][j]
+  return D
+
+'''
+Populates the nxn matrix A where A[i][k] = a_k(i)
+'''
+def populate_A(D, n):
+  A = np.zeros((n, n), dtype=int)
+  for k in range(1, n+1):
+    for i in range(1, k+1):
+        for j in range(i+1, k+1): 
+          if D[k-1][i-1][j-1] == 1:
+            A[i-1][k-1] = j
+  return A
+
+'''
+Finds p, the optimal splitpoint such that fn(p, p+1) = max l : 1 <= l < n(fn(l, r+l)))
+'''
+def find_p(F, s):
+  n = len(s)
+  maxVal = 0
+  p = -1
+  for i in range(1, n):
+    curr = F[n-1][i-1][i] 
+    if curr > maxVal: 
+      maxVal = curr 
+      p = i
+  return p
+
+"""
+Finds F_n(i, i+1) for each i 
+
+"""
+def find_L(F, s): 
+  n = len(s)
+  L = np.zeros((1, n+1), dtype = int)
+  n = len(s) 
+  for i in range(1, n):       
+    L[0][i] = F[n-1][i-1][i] 
+  return L
+    
+'''
+Prints F, D, and A for input string 's'
+'''
+def LTS(s):
+  n = len(s)
+  empty_bufferF = np.zeros((n+1, n+1, n+1), dtype=int)
+  bufferF = populate_F(empty_bufferF, s)
+  D = populate_D(bufferF, n)
+  F = np.zeros((n, n, n), dtype=int)
+  for k in range(1, n+1):
+    for i in range (1, n+1):
+     for j in range(1, n+1):
+        F[k-1][i-1][j-1] = bufferF[k][i][j]
+  A = populate_A(D, n)
+  p = find_p(F, s)
+  return find_L(F, s)[0]
 
 def test_rand(alphabet, max_length):
   for x in range(num_tests):
