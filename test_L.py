@@ -163,7 +163,7 @@ def plot(s, L, m):
     plt.xlim(0, len(L) - 1)
     plt.ylim(min(y), max(y) + 0.3)  # Add minimal padding to make y-axis proportional without excessive spacing
     plt.gca().set_box_aspect(.25)
-    plt.title(f"{m}")
+    # plt.title(f"{m}")
     plt.draw()
 """
 Generates the string of the form of case 1 or case 2
@@ -270,7 +270,7 @@ def count_to_h(h, L):
       count = count + 1
   return count
 
-# returns splitpoint that results in LTS
+# returns splitpoint(s) that result(s) in LTS
 def LTS_sp(L): 
   LTS = max(L)
   ls = []
@@ -305,24 +305,20 @@ def testMiddleBin(n, m):
 """
 Tests if LTS appears at exactly 1/4 of 3/4 mark
 """
-def testEdgeBin(n, m):
-  for i in range(n, m+1):
-    print(f"Start {i} ")
-    for s in genBinary(i):
-      n = len(s)
-      L = test_L(s)
-      ls = LTS_sp(L)
-      ls2 = LTS_sp(L)
-      i1 =  math.ceil(n/4 )
-      i2 = math.floor((n *3)/4) 
+def testEdgeBin(s):
+    n = len(s)
+    L = test_L(s)
+    ls = LTS_sp(L)
+    ls2 = LTS_sp(L)
+    i1 =  math.ceil(n/4 )
+    i2 = math.floor((n *3)/4) 
       
       # print(ls)
-      for m in ls2: 
+    for m in ls2: 
         if m < (i1) or m > (i2):
             ls.remove(m)
-      if not ls: 
+    if not ls: 
          print(f"uh oh \n {n}, {i1}, {i2} \n {L}\n {ls} \n \n")
-    print(f"Finish {i} \n ")
 
 
 def testNumToH(n, m):
@@ -354,7 +350,7 @@ def testNumToH(n, m):
     # plot(s, test_L(s), 0, 0)
     # plt.show()
 
-testMiddleBin(3, 20)
+# testMiddleBin(3, 20)
 # f = open("consecutive ones.txt", "a")
 # f.write(f"Testing all binary strings up to length 15")
 # f.write(f"Three conseuctive ones:\n {lst3}\n")
@@ -363,13 +359,21 @@ testMiddleBin(3, 20)
 # f.write(f"6+ conseuctive one:\n {lst}\n")
 # f.close()
 
+
+def peak_heights(locs, L):
+  heights = []
+  for p in locs:
+      heights.append(L[p])
+  return heights
 # count_n([0,1,2,1,2,1,2,1,0], 2)
 
-# for i in range(1, 100):
-#   for k in range(-i, i+1):
-#     s = test_case5(i, k)
-#     L = test_L(s)
-#     ci = count_n(L, i)
-#     plot(s, L, f"i = {i} k = {k}")
-#     plt.show()
+for s in genBinary(1, 10):
+  if testEdgeBin(s) == True:
+     print(s)
  
+
+# s = test_case4(7)
+# L = analyze(s)
+# print(L)
+# plot(s, L, "")
+# plt.show()

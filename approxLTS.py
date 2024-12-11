@@ -192,19 +192,43 @@ def testAvgAllBinary(n, m):
       avgApprox = inner_total/inner_count
       actual =  float(max(LTS(s)))
       ratio = avgApprox/actual
-      if ratio < 0.75:
-        if max(LTS(s)) > 6:
-          print(s, LTS(s))
-          print(avgApprox)
-          print(actual)
-          print(inner_count, inner_total)
-          print(ratio)
+      if ratio == 0.5:
+        # if max(LTS(s)) > 6:
+          print(s, LTS(s), testEdgeBin(s))
+          print("approx", avgApprox, "/", "actual", actual, "=", ratio)
           break
       total += ratio
     print(f"End {i}\n")
   return total/count
 
 
+# returns splitpoint(s) that result(s) in LTS
+def LTS_sp(L): 
+  LTS = max(L)
+  ls = []
+  for i in range(0, len(L)):
+     if L[i] == LTS:
+        ls.append(i)
+  return ls
+
+"""
+Tests if LTS appears at exactly 1/4 of 3/4 mark
+"""
+def testEdgeBin(s):
+    n = len(s)
+    L = LTS(s)
+    ls = LTS_sp(L)
+    ls2 = LTS_sp(L)
+    i1 =  math.ceil(n/4 )
+    i2 = math.floor((n *3)/4) 
+      
+      # print(ls)
+    for m in ls2: 
+        if m < (i1) or m > (i2):
+            ls.remove(m)
+    if not ls: 
+         return False
+    return True
       
       # total += approxRandLTS(s, i1, i2)
   # return total/count
