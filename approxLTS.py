@@ -176,9 +176,9 @@ approximation for a random sp in middle 1/2
 def testAvgAllBinary(n, m):
   count = 0.0
   total = 0.0
-  for i in range(n, m+1):
-    print(f"Start {i}")
-    for s in genBinary(i):
+  # for i in range(n, m+1):
+  #   print(f"Start {i}")
+  for s in ["00000000000", "000000111111"]:
       count += 1.0
       actual = float(max(LTS(s)))
       n = len(s)
@@ -190,16 +190,14 @@ def testAvgAllBinary(n, m):
         inner_count += 1.0
         inner_total += float(LCS(s[:j], s[j:]))
       avgApprox = inner_total/inner_count
-      actual =  float(max(LTS(s)))
+      actual = float(max(LTS(s)))
       ratio = avgApprox/actual
-      if ratio == 0.5:
         # if max(LTS(s)) > 6:
-          print(s, LTS(s), testEdgeBin(s))
-          print("approx", avgApprox, "/", "actual", actual, "=", ratio)
-          break
+      print(s, LTS(s), testEdgeBin(s))
+      print("l1 =", LTS(s)[i1], " and l2 =", LTS(s)[i2], "at i1 =", i1,"i2 =", i2 )
+      print("innertotal", inner_total)
+      print("approx", avgApprox, "/", "actual", actual, "=", ratio, "\n")
       total += ratio
-    print(f"End {i}\n")
-  return total/count
 
 
 # returns splitpoint(s) that result(s) in LTS
@@ -235,5 +233,5 @@ def testEdgeBin(s):
 
 
 
-print(testAvgAllBinary(7, 15))   
+testAvgAllBinary(1, 2) 
 

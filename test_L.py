@@ -2,6 +2,7 @@ import random
 import numpy as np
 import matplotlib.pyplot as plt
 from itertools import product
+import sys
 import math
 
 
@@ -141,19 +142,21 @@ def test_L(s):
 Plots the graphs
 """
 def plot(s, L, m):
-    plt.figure()
+    plt.figure(figsize=(8, 6))
     x = list(range(len(L)))
     y = L
     plt.plot(x, y, marker='o', color='blue', linewidth=2, markersize=5)
     
     max_ticks = 10
-    x_ticks = np.linspace(0, len(L) - 1, min(len(L), max_ticks), dtype=int)
+    x_ticks = np.arange(0, len(L), max(1, len(L) // max_ticks))
     y_ticks = np.linspace(min(y), max(y), len(x_ticks), dtype=int)  # Match the number of y-ticks to x-ticks for visual proportion
     
-    plt.xticks(x_ticks)
+    # plt.xticks(range(0, len(L), 2))
+    plt.xticks(range(len(L)))
     plt.yticks(y_ticks)
     
-    plt.xlabel(f"{L}")
+    # plt.xlabel(f"{}")
+    # plt.xlabel(f"{li}")
     plt.gca().spines['top'].set_visible(False)
     plt.gca().spines['right'].set_visible(False)
     plt.gca().spines['left'].set_position(('data', 0)) 
@@ -163,7 +166,7 @@ def plot(s, L, m):
     plt.xlim(0, len(L) - 1)
     plt.ylim(min(y), max(y) + 0.3)  # Add minimal padding to make y-axis proportional without excessive spacing
     plt.gca().set_box_aspect(.25)
-    # plt.title(f"{m}")
+    plt.title(f"s={s}")
     plt.draw()
 """
 Generates the string of the form of case 1 or case 2
@@ -198,9 +201,9 @@ def test_case3(m, n):
     return s          
 def test_case4(h): 
    s = ""
-   for _ in range(0, h+1): s += ('0')
-   for _ in range(0, 2*h+1): s += ('1')
-   for _ in range(0, h): s += ('0')
+   for _ in range(0, h+1): s += ('a')
+   for _ in range(0, 2*h+1): s += ('b')
+   for _ in range(0, h): s += ('a')
    return s
 def test_case5(i, k): 
    s = ""
@@ -321,59 +324,82 @@ def testEdgeBin(s):
          print(f"uh oh \n {n}, {i1}, {i2} \n {L}\n {ls} \n \n")
 
 
-def testNumToH(n, m):
-  for i in range(n, m+1):
-    print(f"Start {i} ")
-    for s in genBinary(i):
-      n = len(s)
-      L = test_L(s)
-      h = 3
-      if count_to_h(h, L) == 4*h +3:
-         print(s, L)
-    print(f"Finish {i} \n ")
-  # print(lst3)
-   # count = 0
-# for s in genBinary(10):
-#   count = count + 1
-#   if count % 100 == 0: 
-#     print(count)
-#     # print(f"{s} {test_L(s)}")
-#   if test_L(s) == [0, 1, 2, 2, 2, 2, 2, 2, 2, 1, 0]:
-#      print(s)
-# for m in range(1, 5):
-#   for n in range(1, 2*m+4):
-#     s = test_case3(m, n)
-#     plot(s, test_L(s), m, n)
-#     plt.show()
-#     print(f"(m, n) = ({m}, {n}), \n s = {s} \n \n")
-    # print(f"(m, n) = ({m}, {n}), {n} appears {count_n(analyze(s), n)} times")
-    # plot(s, test_L(s), 0, 0)
-    # plt.show()
-
-# testMiddleBin(3, 20)
-# f = open("consecutive ones.txt", "a")
-# f.write(f"Testing all binary strings up to length 15")
-# f.write(f"Three conseuctive ones:\n {lst3}\n")
-# f.write(f"Four conseuctive one:\n {lst4}\n")
-# f.write(f"Five conseuctive one:\n {lst5}\n")
-# f.write(f"6+ conseuctive one:\n {lst}\n")
-# f.close()
-
-
 def peak_heights(locs, L):
   heights = []
   for p in locs:
       heights.append(L[p])
   return heights
-# count_n([0,1,2,1,2,1,2,1,0], 2)
 
-for s in genBinary(1, 10):
-  if testEdgeBin(s) == True:
-     print(s)
- 
 
-# s = test_case4(7)
-# L = analyze(s)
-# print(L)
-# plot(s, L, "")
-# plt.show()
+def genMountain(n,m):
+  for i in range(n, m+1):
+      print("Start", i)
+      for s in genBinary(i):
+        L = analyze(s)
+        if len(count_peaks(L)) == 1:
+          plot(s, L, "")
+          plt.show()
+      print("End", i)
+
+
+def testMathShallow(n): 
+  top = n*n - 8*n + 7
+  bot = 4* n * n + 4 * n 
+  if bot != 0:
+    return top/bot
+  else: return 0
+
+
+def testShallow(n, m):
+  lowest = [None] * (m+1)
+  for i in range(n, m+1):
+    lowest[i] = sys.maxsize
+    lowest_s = ""
+    lowest_peak = 0
+    for s in genBinary(i):
+      L = analyze(s)
+      sumL = sum(L)
+      # print(f"s = {s}, L = {L}, sumL = {sumL}")
+      if sumL < lowest[i]:
+        lowest[i] = sumL
+        lowest_s = s
+        lowest_peak = max(L)
+      # if L == [0, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 1, 1, 0]: 
+      #   print(L)
+      #   plot(s, L, "")
+      #   plt.show()
+    if (lowest_peak) == 0:
+       print(f"i = {i} ")
+    else:
+      avg = (lowest[i]/(i+1))
+      lb = testMathShallow(n)
+      if avg < testMathShallow(n):
+        print(f"eeeeeeeeeep! avg = {avg/lowest_peak}, lb = {lb}")
+      print(f"i = {i}, sum = {lowest[i]}")
+      print(f"avg = {avg} \n peak = {lowest_peak}, approx = {avg/lowest_peak}, lb = {lb}")
+      print(f"\t s = {lowest_s}\n")
+      print(f"i = {i}, peak = {max(test_L(s))}, \t s = {lowest_s},  L = {test_L(s)}")
+      print(0)
+
+
+    # print(f"Finish {i} \n ")
+
+def avgHeight(n, m):
+  for i in range(n, m+1):
+      allAvg = []
+      allStr = []
+      for s in genBinary(i):
+        allStr.append(s)
+        L = test_L(s)
+        sumL = sum(L) 
+        # avgHeight = sumL/(i-1)
+        allAvg.append(sumL)
+      minAvg = min(allAvg)
+      # maxAvg = max(allAvg)
+      # avgAvg = sum(allAvg)/len(allAvg)
+      print(f"i = {i}, min = {minAvg}")
+      # print(f"i = {i}, min = {minAvg}, max = {maxAvg}, avg = {avgAvg}")
+      
+
+# testShallow(2, 15)
+print(test_L("0001"))
